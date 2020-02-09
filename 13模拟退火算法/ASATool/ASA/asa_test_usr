@@ -1,0 +1,15 @@
+/* $Id: asa_test_usr,v 30.18 2015/01/27 22:43:11 ingber Exp ingber $ */
+
+CC = gcc
+	-g
+	-Wall
+	-ffloat-store
+	-DASA_TEST=TRUE
+
+exit code = 2
+final cost value =            0
+parameter	value
+0		  0.01467097
+1		  0.02876664
+2		  0.02477989
+3		 -0.03838191

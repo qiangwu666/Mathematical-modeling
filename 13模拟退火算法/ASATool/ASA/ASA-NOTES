@@ -1,0 +1,1145 @@
+/***********************************************************************
+* Adaptive Simulated Annealing (ASA)
+* Lester Ingber <ingber@ingber.com>
+* Copyright (c) 1987-2015 Lester Ingber.  All Rights Reserved.
+* ASA-LICENSE file has the license that must be included with ASA code.
+***********************************************************************/
+
+$Id: ASA-NOTES,v 30.18 2015/01/27 22:43:09 ingber Exp ingber $
+
+========================================================================
+			CONTENTS (Search on these words)
+
+NOTE:  I have attempted to specifically date sections where some
+updates in other files might give conflicting references.
+
+@@SOME USER FRIENDLY ISSUES
+	@@Original ASA Comments
+	@@Some Reflections After a Score of Years
+@@SOME SA/ASA COMMENTS
+	@@General Comments
+	@@Parameter-Temperature Scales
+	@@Equality and Inequality Constraints
+	@@Number of Generated States Required
+@@TUNING FOR SOME SYSTEMS
+	@@Tuning
+	@@Some Tuning Guidelines
+	@@Quenching
+	@@Options for Large Spaces
+	@@Shunting to Local Codes
+	@@Judging Importance-Sampling
+@@SPECIAL COMPILATIONS/CODE
+	@@Tsallis Statistics
+	@@Dynamic Hill Climbing (DHC)
+	@@FORTRAN Issues
+	@@Specific Machines/Architectures
+
+========================================================================
+========================================================================
+@@SOME USER FRIENDLY ISSUES
+
+========================================================================
+	@@Original ASA Comments
+
+I do not give out any info I receive from users unless they
+specifically permit me to do so; that way many people do ask questions
+and give me info/feedback on the code they might not give otherwise.
+In order to get maximum feedback without unduly bothering researchers,
+I also have decided not to make the ASA_list an open forum, but rather
+an efficient moderated medium to gather information.
+
+While I agree the code should become more user friendly, my first
+priority for the time I have is to make the code more powerful.  I
+figure that such algorithms are usually most useful only for really
+hard problems, and if a group can't enough help from me via e-mail,
+well then they might have to consult an expert.  I think the best
+answer is to someday get someone to work to produce a graphical user
+interface, embedding knowledge gained by helping many people, into some
+menu-driven program that can guide a user at various stages of the
+search.
+
+In ASA, I have broken out all user OPTIONS into plain view.  Many of
+these are counterparts to parameters "hidden" in other codes.  The
+downside of having this control is that it can be bewildering at
+first.  The upside is that people have been able to solve hard problems
+they could not solve any other way.
+
+The easiest way for many users to quickly use ASA likely is to invoke
+the COST_FILE OPTIONS (the default), illustrated in the section Use of
+COST_FILE on Shubert Problem below.  The ASA-README files give further
+instructions on alternative ways of compiling the code.
+
+========================================================================
+	@@Some Reflections After a Score of Years
+
+In response to:
+
+Andreas Schuldei 9/25/2006 6:55 AM:
+> Hi!
+> 
+> I used your ASA code about 10-6 years ago with good results and
+> want to thank you for providing it.
+> 
+> however even back then i noticed that it was in urgent need of a
+> good refactoration. 
+> 
+> http://en.wikipedia.org/wiki/Refactor
+> 
+> I encourage you to go over your code and split it up in more
+> readable chunks. todays compilers are pretty good at optimizing
+> the result so it will not impact your programs performance.
+> 
+> In the meantime i also became more involved in free software. I
+> think you would get more contributions (e.g. doing this
+> refactoration) from other people if you used the GPL as a
+> license. 
+> 
+> Again, thank you very much for your excellt program.
+> 
+> /andreas
+
+Andreas:
+
+Hi.
+
+I agree about the refactoration, but I don't agree about the GPL license:
+
+When I first wrote the code it was in broken into multiple files which
+were easy to take care of.  I made the decision, which feedback has
+shown to be a good one, to make the code look less formidable to many
+users by aggregating the code into just a few files.   The code is used
+widely across many disciplines, but often by expert people or groups
+without computer science skills, and often tuning can be accomplished by
+tweaking the parameter file and not having to deal with the .c files
+very much.
+
+Even if I choose to keep just a few files, I just do not have the time
+to rewrite the code into better code similar to how I write code now,
+20 years later (I first wrote the VFSR code in 1987).  However, for me
+at least, the structure of the code makes it very easy to maintain, and
+I been able to be responsive to any major changes that might come up.
+The ASA-CHANGES files reflects this.
+
+I have led teams of extremely bright and competent math-physics and
+computer-science people in several disciplines over the years, and I
+have also seen how code that may be written in exemplary languages,
+whether C, Java, C++, python, etc., nonetheless can be rotten to
+maintain if it is not written in a "functional" manner that better
+reflects the underlying algebra or physical process, e.g., as most
+people would program in an algebraic language like Macsyma/Maxima,
+Maple, etc.  In many of these projects, we had no problem using ASA.
+This does not excuse a lot of the clumsy writing in ASA, but it does
+reflect on the difference between code that is just well-written but not
+flexible and robust to maintain.
+
+By now, ASA represents a lot of feedback from thousands of users.  A
+major strength of the code is that it has well over 100 tuning OPTIONS,
+albeit in many case only a few are usually required.  This is the nature
+of sampling algorithms, and I have broken out all such code-specific
+parameters into a top-level meta-language that is easy for an end-user
+to handle.  Other very good sampling algorithms do not give such robust
+tuning, and too often do not work on some complex systems for some users
+just for this reason.  This also has added a lot of weight to the code,
+but since most of these ASA OPTIONS are chosen at pre-compile time, this
+does not affect the executables in typical use.  I have had at least
+half a dozen exceptional coders start to rewrite the code into another
+language, e.g., C++, Java, Matlab, etc., but they gave up when faced
+with integrating all the ASA OPTIONS.  (There is no way I could
+influence them to start or stop such projects.)  I think all these
+OPTIONS are indeed necessary for such a generic code.
+
+Re the GPL license, I instead chose a Berkeley UNIX-type license.  I
+felt and still feel, similar to many other people who make code
+available at no charge to others, that the GPL license is just too
+cumbersome and onerous.  I have made my code available at no charge to
+anyone or any company, subject to very simple terms.  If some user
+contributions do not quite fit into the code per se, I have put or
+referenced their contributions into the asa_contrib.txt or ASA-NOTES
+files.  I do not think this has stymied people from contributing to the
+code.
+
+I very much appreciate your writing to me.
+
+Lester
+
+========================================================================
+========================================================================
+@@SOME SA/ASA COMMENTS
+
+========================================================================
+	@@General Comments
+
+"Adaptive" in Adaptive Simulated Annealing refers to adaptive options
+available to a user to tune the ASA algorithm to optimize the code for
+applications to specific systems.  While the default options may
+suffice for many applications, this is not intended to imply that the
+code will automatically adaptively seek the best tuning options.  (The
+SELF_OPTIMIZE OPTIONS theoretically may do well in some cases to
+automate this, but it likely is too CPU expensive.)  Rather, the
+intention is to recognize that nonlinear systems typically are quite
+non-typical, and such tuning is often essential as part of an
+interaction between the user and the system as knowledge of the system
+is gained by successive stages of applying the algorithm.  The section
+Efficiency Versus Necessity in the ASA-README also discusses this.
+
+Simulated annealing (SA) algorithms vary in how fast the temperature
+schedule can be implemented to satisfy a (weakly) ergodic search, to
+reasonably statistically sample the parameter space.  The Boltzmann SA
+algorithm (BA) requires a very slow schedule, so people usually "cheat"
+and apply a faster schedule, thereby in practice defining "simulated
+quenching" (SQ) rather than SA.  This voids the SA proof, and while it
+may work well on some problems, as might some other "greedy"
+algorithms, making it a valuable tool on such occasions, it likely
+will fail on some other problems that would yield to the proven
+temperature schedule.
+
+There are SA algorithms that are proven to statistically sample the
+space effectively that are exponentially (fast SA, FSA) and also
+exponentially exponentially (adaptive SA, ASA) faster than the standard
+BA algorithm.  This usually implies that the rejection rate is higher
+to accept new points, but in practice this rate increases only modestly
+across problems relative to BA, thus truly taking advantage of the
+faster sampling temperature.  Of course, SQ can also be applied to
+these SA algorithms, and such accelerations can be useful in large
+dimensional spaces.
+
+I think the bottom line is this:  If you don't know anything about your
+system, and it is very important to find the global optimal point, then
+using SA at least gives you some statistical guarantee that you will
+not get stuck at a local optimal point.  This also requires some common
+sense.  If you start out a very low temperature, or some equivalent set
+of such algorithm parameters, you may make it impractical to get a fit
+within any practical time or within practical machine precision.  Thus,
+even here, there still may be some "art" required to find a decent set
+of starting conditions.  I think this is the nature of nonlinear
+systems, that they are often so different, that defies using algorithms
+as "black boxes" as can be done for (quasi-)linear systems.
+
+ASA can often do very well in the beginning stages of broad search, as
+well as in the end stages of sharpening the precision of the final
+answer.  A good way to see this is to plot the log of the number of
+generated points versus the log of the value of the cost function or
+"cost procedure."  However, some problems do not show such a clean
+division, and then ASA can be even more important.
+
+A good way of including constraints is to test them in your cost
+function and return a non-valid flag as soon as any are not satisfied.
+Then the penalty part of your cost function is not exactly part of the
+cost function being minimized.  This often is more efficient than
+including penalty functions explicitly as part of the cost function,
+which works well with ASA.
+
+Concerning reannealing in ASA, if too radical a reannealing procedure
+is taken, i.e., much more radical than the linear rescaling in the
+present code, then this can be self-defeating.  For example, consider
+how difficult/impossible it might be to say that a given dimension is
+the most sensitive one early in a search, when it might turn out to be
+the least sensitive one in the end stages of the search.  So, some
+compromise seems to be to take a regularly selected moderate approach,
+and I chose the acceptance criteria (every set number of accepted
+points) to be better at gauging the changing sensitivity of the search
+than the generating criteria (number of generated points).
+
+The parameter temperatures determine the "effective" width of the ASA
+distribution to select new generated points about the current optimal
+point.  When used in conjunction with the proper annealing schedule,
+this ensures a statistical covering of the parameter space, as given by
+the simple proof in the ASA papers.  (See the section Judging
+Importance-Sampling below for more info.)
+
+Most discussions on SA focus on the cost temperature, and the analogy
+to metallic cooling/annealing.  They do not properly address the issue
+of the annealing schedule, and the necessity of satisfying the guide to
+statistical ergodicity.  If they neglect this, then their resulting
+algorithm is really "just" another quasi-local algorithm, which belongs
+in the class I call "simulated quenching" (SQ), without establishing
+any statistical certainty of being able to find the global optimal
+point.  That said, SQ techniques still can be very useful and
+powerful.
+
+In ASA, one of the most useful control for some people has been
+USER_COST_SCHEDULE, which permits just about anything for the cost
+temp.  This is possible since the ASA proof of proper sampling just
+concerns the parameter temperatures (within reason, as discussed in the
+docs and as is sometimes obvious--if you start too focussed, it may
+take until your next generation to sample the space, etc.)
+
+You can use an alternative to the Boltzmann using
+USER_ACCEPTANCE_TEST.  This can be useful in cases where the form of
+your cost function varies with scale, e.g., changing from a power at
+coarse scales to an exponential at finer scales.  In the
+ASA_TEMPLATE_SAMPLE template in asa_usr.c there is an example of a class
+of such modifications.  Note that when USER_ACCEPTANCE_TEST is TRUE,
+you also have the option of calculating the acceptance criteria within
+the user_cost_function().  This can be very useful when a partial
+calculation of the cost function suffices to apply an acceptance
+criteria.
+
+You can define an alternative to the ASA generating function (or
+whatever algorithm is required) using USER_GENERATING_FUNCTION.  For
+example, mild modifications to the ASA distribution can be useful,
+e.g., slowing down the annealing schedule by taking a fractional root
+of the current temperature.
+
+In the current implementation, only one current optimal point is kept
+at a time.  I do not see the utility of keeping more than one optimal
+point at a time.  For example, some people have asked if starting with
+several random seeds would help the efficiency of the code.  I do not
+think so:  The fat tail of the ASA distribution results in a fairly
+high generated to accepted ratio, and in practice this accounts for a
+fairly robust sampling.  However, their is much merit in considering
+calculating blocks of generating points.  As I mention in
+asa92_mnn.pdf, this can be extremely helpful in a parallelized
+version.  There are ASA_PARALLEL hooks in the present code to do this,
+as explained in the ASA-README.
+
+I do not think some comments about SA theory not having any practical
+value, given finite machine precision, a popular argument to be sure,
+is too relevant.  Most complex systems exist at multiple scales; in
+fact, for most physical systems, the very concept of "noise" is really
+the the introduction of new variables (e.g., in an appropriate Ito or
+Stratonovich representations, etc.) to represent some statistical
+aggregation over "fast" variables.  In this context, sampling a cost
+function/system should be understood by the researcher as typically
+being appropriate to some scale(s).  For many systems, machine
+precision suffices at the appropriate scale(s) to effectively sample
+the parameter space, and here I think it relevant that SA techniques
+can offer a better guide (_especially_ in the absence of other info
+about the system, e.g., the existence of convexity, etc.) to
+effectively sample the space (if indeed that is required) than other
+algorithms.
+
+========================================================================
+	@@Parameter-Temperature Scales
+
+If indeed you need to have many generated states, then increasing
+OPTIONS->Temperature_Ratio_Scale (by way of lowering the argument of
+the power of 10) is a good idea, as this lowers
+        m = -log(OPTIONS->Temperature_Ratio_Scale)
+which lowers
+        c_i = m_i exp(-n_i/D)
+which permits slower annealing via
+        T_i(k_i) = T_0i exp(-c_i k_i^(1/D))
+so that you still might have some moderate (not too small) temperatures
+out at high numbers of generated states.  If
+RATIO_TEMPERATURE_SCALES is set to TRUE, then
+	m_i = m OPTIONS->User_Temperature_Ratio[i].
+Also note that
+	n_i = log(OPTIONS->Temperature_Anneal_Scale)
+and it is not really necessary to have an OPTIONS to set these
+independently as one can always use m_i for this purpose.
+
+Of course, both m_i and n could have been aggregated into one OPTIONS
+c_i.  However, as explained in the first VFSR paper and as outlined in
+the ASA-README, there is a good rationale for keeping m_i and n, with their
+different effects on c_i, as they usefully model the approximate
+"expected" ratio of final to initial temperatures and the associated
+numbers of generated states amassed during annealing, respectively.
+
+========================================================================
+	@@Equality and Inequality Constraints
+
+15 Jan 15
+
+Hime Aguiar and his colleagues, who have contributed ASA_FUZZY to ASA,
+have developed an procedure to develop existence criteria for when an
+N-dimensional space constrained search with p equality constraints
+can be developed into an effective N-p dimensional search, when the
+feasible domain can be modelled by a smooth submanifold defined by
+equality constraints expressions.  In some cases the existence proof
+presents numerical procedures for solution of the N-p dimensional space.
+See the paper cited in http://ingber.com/asa_papers.html that references
+http://dx.doi.org/10.1016/j.ins.2014.12.032 .
+
+25 Jul 11
+
+The method of Lagrange multipliers might help to add equality and inequality
+constraints to a cost function C(x,p), where x is a vector of variables
+and p is a vector of parameters; the p's are varied by ASA to achieve
+optimization of C(x,p).
+
+For example consider constraints on C(x,p)
+H(x) = 0
+G(x) < 0
+which are fairly generic as manytimes equalities and inequalities can be
+put into such forms.
+
+The approach is to then use ASA to optimize a new cost function K(x,q)
+K(x,q) = C(x,p) + q_e | H(x) | + q_i Min[0,G(x)] 
+where q is an extended vector of ASA parameters
+q = {p, q_e, q_i}
+q_e > 0
+q_i > 0
+and | H | represents the absolute value of H.
+
+Be sure to check the final values of the optimized parameters.  If it
+makes sense for your problem, keep the ASA default to calculate tangents
+at the exit, to check that the final values of derivatives of K with
+respect to q are relatively quite small, signifying extremal points are
+reached.  Also, if it makes sense for your problem, keep the ASA default
+to calculate curvatures at the exit, to check that the final values of
+second derivatives of K with respect to q are are positive, or at least
+relatively quite small, signifying stable minima points are reached.
+
+You may have to adjust the range of {q_e, q_i} to achieve reasonable fits.
+It should be clear that very large values or very small values of the
+Lagrange multipliers will skew the problem to optimizing only part of
+the function K(p,q).  There are several published algorithms using
+modified simulated annealing to (quasi-)automate such optimizations
+with constraints.
+
+13 Dec 94
+
+If you have equality constraints that can only be enforced as actual
+equations in the code (e.g., you can't numerically use them to
+substitute in other expressions), you will have problems.  This is
+simply because you are constraining the search on the surface of some
+volume, and the entire volume is being sampled.  This will be the case
+when using any true sampling algorithm.
+
+For example, if you have a cost function with n parameters,
+C(p_1, p_2, ..., p_n),  and an equality constraint between parameters
+p_n and p_n-1, then solve this equation for p_n, numerically or
+algebraically, redefining your cost function to one with n-1
+parameters, C'.  If the solution to this equation, or perhaps a set of
+m such equality constraints to reduce the number of parameters actually
+processed by ASA to n-m, is not simply written down, then you will of
+course have to solve such constraints with other algorithms within your
+cost function.  If the solution of these equality constraints are so
+difficult that by themselves they cannot be approached with
+quasi-Newton algorithms, then you could use the recursive properties of
+ASA to solve these equations, appropriately defined by another cost
+function within your original cost function.
+
+However, if there are branches of multiple solutions of these equality
+constraints, then you could use these as a discrete or continuous set
+of parameter values within your cost function, instead of reducing the
+parameter dimension processed by ASA, e.g., perhaps using
+OPTIONS->Sequential_Parameters to delay generating a choice among the
+roots of the equality constraints until the other independent
+parameters are given new generated values; see the ASA-README for the use
+of parameter_minimum[] and parameter_maximum[] which may be required
+for such cases.
+
+========================================================================
+	@@Number of Generated States Required
+
+The question often arises as to how to guess the required time required
+to get the global minimum, which likely is best measured by the
+required number of generated states.  While there are quite a few
+papers published on this important topic, in general it is quite
+difficult to give a categorical answer, basically because (a) nonlinear
+systems typically are quite different, (b) many nonlinear systems have
+different "terrain" at different scales -- essentially being different
+systems at these different scales, and (c) results can be very
+dependent on the global optimization algorithm used.
+
+Of course, if ASA already has given you an optimal state, this can be
+considered a tentative bound, and then you can explore possibilities to
+get this same optimal state with fewer generated states, e.g., using
+SELF_OPTIMIZE if you do not enough information about your system to
+make some educate guesses for further tuning of the OPTIONS.
+
+Otherwise, you can use plots of generated states versus current the
+best cost_function value mentioned above in General Comments, to
+extrapolate the number of generated states required to achieve future
+values of the cost_function.  Since experience has shown that many
+systems exhibit at least three different regions with quite different
+shapes -- (1) a quasi-linear region during the initial broad search,
+(2) a quasi-linear region during the final search, and (3) a quite
+nonlinear region between (1) and (2) -- you would have to be fairly
+certain that you are in region (2) in order to consider any such
+extrapolation even a crude guess to the number of required generated
+states.  Furthermore, you can perform such plots with several values of
+selected OPTIONS, to help extrapolate the required number of generated
+states as a function of these OPTIONS.
+
+Note that some of my previous ASA publications illustrate comparisons
+of such log-log plots with other global optimization algorithms.  Even
+the general shape, not just the end result, of the plots can differ
+depending on the algorithm used.  This is further evidence that using
+general theoretical guides, as mentioned in (c) above, can be quite
+misleading.
+
+========================================================================
+========================================================================
+@@TUNING FOR SOME SYSTEMS
+
+========================================================================
+	@@Tuning
+
+Nonlinear systems are typically not typical, and so it is difficult if
+not impossible to give guidelines for ASA defaults similar to what you
+might expect for "canned" quasi-linear systems.  I have tried to
+prepare the ASA-README to give some guidelines, and if all else fails you
+could experiment a bit using a logical approach with the SELF_OPTIMIZE
+OPTIONS.  I still advise some experimentation that might yield a bit of
+insight about a particular system.  In many case, the best approach is
+probably a "blend":  Make a guess or two, then  fine-tune the guesses
+with SELF_OPTIMIZE in some rather finer range of the parameter(s).  The
+reason this is slow is because ASA does what you expect it to do:  It
+truly samples the space.  When SELF_OPTIMIZE is turned on, for each
+call of the top-level ASA parameters selected, the "inner" shell of
+your system's parameters are optimized, and this is performed for an
+optimization of the "outer" top-level shell of ASA parameters.  If you
+find that indeed this is a necessary and valuable approach to your
+problem, then one possible short cut might be to turn on Quenching for
+the outer shell.
+
+The ASA proof of statistical convergence to a global optimal point
+gives sufficient, _not_ necessary, conditions.  This still is a pretty
+strong statement since one can only importance-sample a large space in
+a finite time.  Note that some spaces would easily require CPU times
+much greater than the lifetime of the universe to sample all points.
+If you "tucked away" a "pathological" singular optimal point in an
+otherwise "smooth" space, indeed ASA might have to run "forever."  If
+the problem isn't quite so pathological, you might have to slow down
+the annealing, to permit ASA to spend more time at each scale to
+investigate the finer scales; then, you would have to explore some
+other OPTIONS.  This could be required if your problem looks different
+at different scales, for then you can often get trapped in local
+optima, and thus ASA could fail just as any other "greedy" quasi-Newton
+algorithm.
+
+Because of its exponential annealing schedule, ASA does converge at the
+end stages of runs quite well, so if you start with your setup akin to
+this stage, you will search for a very long time (possibly beyond your
+machine's precision to generate temperatures) to get out.  Or, if you
+start with too broad a search, you will spin your wheels at first
+before settling down to explore multiple local optima.
+
+ASA has demonstrated many times that it is more efficient and gets the
+global point better than other importance-sampling techniques, but this
+still can require "tuning" some ASA OPTIONS.  E.g., as mentioned in the
+ASA-README, a quasi-Newton algorithm should be much more efficient than ASA
+for a parabolic system.
+
+========================================================================
+	@@Some Tuning Guidelines
+
+21 Jan 00
+
+Here are some crude guidelines that typically have been useful to tune
+many systems.  At least ASA has a formal proof of convergence to the
+global minimum of your system.  However, no sampling proof is general
+enough for all systems to guarantee this will take place within your
+lifetime.  This is where the true power of ASA comes into play as the
+code provides many tuning OPTIONS, most that can be applied adaptively
+at any time in the run, to give you tools to tune your system to provide
+reasonably efficient optimizations.  Depending on your system, this may
+be easy or hard, possibly taxing anyone's intuitive and analytic capabilities.
+
+In general, respect the optimization process as a simulation in
+parameter space.  The behavior of a system in this space typically is
+quite different from the system defined by other variables in the system.
+
+(a) Three Stages of Optimization
+It is useful to think of the optimization process as having three main
+stages: initial, middle and end.  In the initial stage you want to be sure
+that ASA is jumping around a lot, visiting all regions of the parameter
+space within the bounds you have set.  In the end stage you want to be
+sure that the cost function is in the region of the global minimum, and
+that the cost function as well as the parameter values are being honed to
+as many significant figures as required.  The middle stage typically can
+require the most tuning, to be sure it smoothly takes the optimization
+from the initial to the end stage, permitting plenty of excursions to
+regularly sample alternative regions/scales of the parameter space.
+
+(b) Tuning Information
+Keep ASA_PRINT_MORE set to TRUE during the tuning process to gather
+information in asa_out whenever a new accepted state is encountered.
+
+If you have ASA_PIPE and/or ASA_PIPE_FILE set to TRUE, additional
+information (in relatively larger files) is gathered especially for
+purposes of graphing key information during the run.  Graphical aids
+can be indispensable for gaining some intuition about your system.
+
+If ASA_SAVE_OPT is set to TRUE then you have the ability to restart runs
+from intermediate accepted states, without having to reproduce a lot of
+the original run each time you wish to adaptively change some OPTIONS
+after a given number of accepted or generated states.
+
+(c) Parameter Temperatures
+As discussed above in the section Parameter-Temperature Scales,
+the temperature schedule is determined by {T_0i, c_i, k_i, Q_i, D}.
+The default is to have all these the same for each parameter temperature.
+See below for a discussion on sensitivities with respect to dimension D.
+
+Note that the sensitivity of the default parameter distributions to
+the parameter temperatures is logarithmic.  Therefore, middle stage
+temperatures of 10^-6 or 10^-7 still permit very large excursions from the
+last local minima to visit new generated states.  Typically (of course
+depending on your system), values of 10^-10 are appropriate for the end
+stage of optimization.
+
+It is advisable to start by changing the c_i to get a reasonable
+temperature schedule throughout the run.  If it becomes difficult to
+do this across the 3 stages, work with the Q_i QUENCH_PARAMETERS as
+these provide different sensitivities at different stages.  Generally,
+it is convenient to use the c_i to tune the middle stage, then add in
+Q_i modifications for the end stage.  As long as the sum Q_i <= 1, then
+the sampling proof is intact.  However, once you are sure of the region
+of the global minima, it can be convenient to turn on actual quenching
+wherein sum Q_i > 1.
+
+Turning on Reanneal_Parameters can be very useful for some systems to
+adaptively adjust the temperatures to different scales of the system.
+
+(d) Cost Temperature
+Note that the sensitivity of the default cost distribution to the cost
+temperatures is exponential.
+
+In general, you would like to see the cost temperatures throughout
+the run be on the scale of the difference between the best and last
+generated states, where the last generated state in the run is at the
+last local minima from which new states are explored.  Therefore, pay
+careful attention to these values.  Note that the last generated state
+is set to the most recently accepted state, and if the recently accepted
+state also is the current best state then the last generated state will
+be so reported.  Therefore, this sensitivity to the last generated state
+works best during parts of the run where the code is sampling alternate
+multiple minima.
+
+The default is to baseline the cost temperature scale to the default
+parameter temperature scale, using Cost_Parameter_Scale_Ratio (default
+= 1).  It is advisable to first tune your parameter temperature schedule
+using Temperature_Ratio_Scale, then to tune your cost temperature schedule
+using Cost_Parameter_Scale_Ratio.  If it becomes difficult to do this across
+the 3 stages, work with the Q QUENCH_COST as this provides a different
+sensitivity at a different stage.  Generally, it is convenient to use
+the c scale via Cost_Parameter_Scale_Ratio to tune the middle stage,
+then add in Q modifications for the end stage.
+
+Turning on Reanneal_Cost can be very useful for some systems to adaptively
+adjust the temperature to different scales of the system.
+
+(e) Large Parameter Dimensions
+As the number of parameter dimensions D increases, you may see that your
+temperatures are changing more than you would like with respect to D.
+The default is to keep the parameter exponents of the k_i summed to 1
+with each exponent set to 1/D.
+
+The effective scale of the default exponential decay of the temperatures
+is proportional to c k^(-Q/D), so smaller D gives smaller decay rates
+for the same values of c, k and Q.  Modifications to this behavior of
+the parameter and cost temperatures are easily made by altering the Q_i
+and Q, resp., as Q_i, Q and D enter the code as Q_i/D and Q/D, resp.
+
+The scales c are set as
+   c = -log(Temperature_Ratio_Scale) exp[-log(Temperature_Anneal_Scale) Q/D]
+Therefore, the sensitivity of c to D can be controlled by modifying
+Temperature_Anneal_Scale or Q.
+
+========================================================================
+	@@Quenching
+
+If you have a large parameter space, and if a "smart" quasi-local
+optimization code won't work for you, then _any_ true global
+optimization code will be faced with the "curse of dimensionality."
+I.e., global optimization algorithms must sample the entire space, and
+even an efficient code like ASA must do this.  As mentioned in the
+ASA-README, there are some features to explore that might work for your
+system.
+
+Simulated "quenching" (SQ) techniques like genetic algorithms (GA)
+obviously are important and are crucial to solving many systems in time
+periods much shorter than might be obtained by standard SA.  In ASA, if
+annealing is forsaken, and Quenching turned on, voiding the proof of
+sampling, remarkable increases of speed can be obtained, apparently
+sometimes even greater than other "greedy" algorithms.
+
+In large D space, this can be especially useful if the parameters are
+relatively independent of each other, by noting that the arguments
+of the exponential temperature schedules are proportional to k^(Q/D).
+Then, you might do better thinking of changing Q/D in fractional moves,
+instead of only small deviations of Q from 1.
+
+For example, in asa92_saga.pdf in the archive, along with 5 GA test
+problems from the UCSD GA archive, another harder problem (the ASA_TEST
+problem that comes with the ASA code) was used.  In asa93_sapvt.pdf in
+this archive, Quenching was applied to this harder problem.  The resulting
+SQ code was shown to speed up the search by as much as as factor of 86
+(without even attempting to see if this could be increased further
+with more extreme quenching).  In the asa_examples.txt file, even
+more dramatic efficiencies were obtained.  This is a simple change of
+one number in the code, turning it into a variant of SQ, and is not
+equivalent to "tuning" any of the other many ASA options, e.g., like
+SELF_OPTIMIZE, USER_COST_SCHEDULE, etc.  Note that SQ will not suffice
+for all systems; several users of ASA reported that Quenching did not
+find the global optimal point that was otherwise be found using the
+"correct" SA algorithm.
+
+As mentioned in the ASA-README, note that you also can use the Quenching
+OPTIONS quite differently, to slow down the annealing process by
+setting USER_OPTIONS->User_Quench_Param_Scale[] to values less than 1.
+This can be useful in problems where the global optimal point is at a
+quite different scale from other local optima, masking its presence.
+This likely might be most useful for low dimensional problems where the
+CPU time incurred by slower annealing might not be a major
+consideration.
+
+Once you decide you can quench, there are many more alternative
+algorithms you might wish to choose for your system, e.g., creating a
+hybrid global-local adaptive quenching search algorithm, e.g., using
+USER_REANNEAL_PARAMETERS.  Note that just using the quenching OPTIONS
+provided with ASA can be quite powerful, as demonstrated in the
+asa_examples.txt file.
+
+========================================================================
+	@@Options for Large Spaces
+
+5 Oct 94
+
+For very large parameter-space dimensions, the following guide is
+useful if you desire to speed up the search:
+
+		Pre-Compile Options
+add -DUSER_REANNEAL_PARAMETERS=TRUE to DEFINE_OPTIONS
+add -DUSER_COST_SCHEDULE=TRUE to DEFINE_OPTIONS
+add -DASA_PRINT_INTERMED=FALSE to DEFINE_OPTIONS
+SMALL_FLOAT may have to be decreased
+set QUENCH_PARAMETERS to TRUE [a risk that negates proper sampling if Q > 1]
+set QUENCH_COST to TRUE
+Perhaps set QUENCH_PARAMETERS_SCALE and QUENCH_COST_SCALE to FALSE
+
+		Program Options
+set Curvature_0 to TRUE
+increase Temperature_Ratio_Scale (smaller negative exponent)
+increase Cost_Parameter_Scale_Ratio
+increase Maximum_Cost_Repeat
+decrease Acceptance_Frequency_Modulus
+decrease Generated_Frequency_Modulus
+
+		run time
+use `nice -19 asa_run ...` as runs can be time- and CPU-intensive
+
+If the parameter space dimension, D, is huge, e.g., 256x256=65536,
+then the exponential of the generating or acceptance index to the 1/D
+power hardly changes over even a few million cycles.  True annealing in
+such huge spaces can become prohibitively slow as the temperatures will
+hardly be diminished over these cycles.  This "curse of dimensionality"
+will face any algorithm seeking to explore an unknown space.  Then,
+the QUENCH_PARAMETERS and QUENCH_COST DEFINE_OPTIONS should be tried.
+
+However, note that slowing down annealing sometimes can speed up the
+search by avoiding spending too much time in some local optimal
+regions.
+========================================================================
+	@@Shunting to Local Codes
+
+I have always maintained in e-mails and in VFSR/ASA publications since
+1987, that SA techniques are best suited for approaching complex
+systems for which little or no information is available.  When the
+range of a global optima is discovered, indeed it may be best to then
+turn to another algorithm.  I have done this myself in several papers,
+shunting over to a quasi-local search, the
+Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm, to "polish" off the
+last 2 or 3 decimals of precision, after I had determined just what
+final level of precision was acceptable.  In the problems where I
+shunted to BFGS, I simply used something the value of Cost_Precision or
+Limit_Acceptances (which were pretty well correlated in some problems)
+to decide when to shunt over.  (I got terrible results if I shunted
+over too quickly.)  However, that was before the days I added OPTIONS
+like USER_COST_SCHEDULE and USER_ACCEPTANCE_TEST, and if and when I
+redo some of those calcs I will first experiment adaptively using these
+to account for different behaviors of my systems at different scales.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+29 Nov 97
+
+When FITLOC is set to TRUE, three subroutines become active to perform
+a local fit after leaving asa ().
+
+========================================================================
+	@@Judging Importance-Sampling
+
+22 Nov 96
+
+If the cost function is plotted simply as a function of decreasing
+temperature(s), often the parameter space does appear to be continually
+sampled in such a plot, but the plot is misleading.  That is, there
+really is importance sampling taking place, and the proof of this is to
+do a log-log plot of the cost function versus the number of generated
+states.  Then you can see that if the temperature schedule is not
+enforced you will have a poor search, if quenching is turned on you
+will get a faster search (though you may miss the global minimum),
+etc.  You can test these effects using quenching and "reverse
+quenching" (slowing down the annealing); it likely would be helpful to
+set QUENCH_COST and QUENCH_PARAMETERS to TRUE, QUENCH_PARAMETERS_SCALE
+and QUENCH_COST_SCALE to FALSE, and perhaps NO_PARAM_TEMP_TEST and
+NO_COST_TEMP_TEST to TRUE.
+
+The point is that the ASA distribution is very fat-tailed, and the
+"effective" widths of the parameters being searched change very slowly with
+decreasing parameter temperatures; the trade-off is that the parameter
+temperatures may decrease exponentially and still obey the sampling
+proof.  Thus, the experience is that ASA finds global minimum when
+other sampling techniques fail, and it typically finds the global
+minimum faster than other sampling techniques as well.
+
+Furthermore, the independence of cost and parameter temperatures
+permits additional tuning of ASA in many difficult problems.  While the
+decreasing parameter temperatures change the way the parameter states
+are generated, the decreasing cost temperature changes the way the
+generated states are accepted.  The sensitivity to the acceptance
+criteria to the cost temperature schedule can be very important in many
+systems.  An examination of a few runs using ASA_PRINT_MORE set to TRUE
+can reveal premature holding onto local minimum or not enough holding
+time, etc., requiring tuning of some ASA OPTIONS.
+========================================================================
+========================================================================
+@@SPECIAL COMPILATIONS/CODE
+
+========================================================================
+	@@Tsallis Statistics
+
+26 Feb 95
+
+A recent paper claimed that a statistics whose parameterization permits
+an asymptotic approximation to the exponential function used for the
+Boltzmann of the standard SA acceptance test, Tsallis statistics, is
+superior to the Boltzmann test, and an example was given comparing
+standard SA to this new algorithm in the traveling salesman problem
+(TSP).
+	%A T.J.P. Penna
+	%T Traveling salesman problem and Tsallis statistics
+	%J Phys. Rev. E
+	%V 50
+	%N 6
+	%P R1-R3
+	%D 1994
+There are two issues here, (a) the value of the Tsallis test vs the
+Boltzmann test, and (b) the use of TSP for the confirmation of (a).
+
+It seems very reasonable that the Tsallis test should be better than
+the Boltzmann test for the SA acceptance test.  For example, if the
+Boltzmann statistics did well on a given cost function $C$, then it
+might be the case that for the cost function $C prime = exp ( C )$ a
+more moderate test, such as obtained for some parameterizations of the
+Tsallis statistics, would be more appropriate to avoid getting stuck in
+local minima of $C prime$.  In fact, from its first inception VFSR and
+ASA have included parameters to effect similar alternatives, and the
+latest versions of ASA now have the Tsallis statistics as another
+alternative that can be commented out.  I have not yet experienced any
+advantages of this over the Boltzmann test when other ASA alternatives
+are permitted to be used, but it seems likely that there do exist some
+problems that might benefit by its use.
+
+The use of TSP as a test for comparisons among SA techniques seems
+quite inappropriate.  To quote another source,
+	%A D.H. Wolpert
+	%A W.G. Macready
+	%T No free lunch theorems for search
+	%R Report
+	%I Santa Fe Institute
+	%C Santa Fe, NM
+	%D 1995
+\*QAs an example of this, it is well known that generic methods (like
+simulated annealing and genetic algorithms) are unable to compete with
+carefully hand-crafted solutions for specific search problems.  The
+Traveling Salesman (TSP) Problem is an excellent example of such a
+situation; the best search algorithms for the TSP problem are
+hand-tailored for it.\*U
+
+========================================================================
+	@@Dynamic Hill Climbing (DHC)
+
+26 Feb 95
+
+Michael de la Maza posted notices to public electronic bulletin boards,
+e.g., as summarized in a public mailing list GA-List@AIC.NRL.NAVY.MIL,
+that his new algorithm, dynamic hill climbing (DHC), clearly
+outperformed genetic algorithms and ASA.  His code is available by
+sending e-mail to dhc@ai.mit.edu.  Since DHC is a variant of a "greedy"
+algorithm, it seemed appropriate to permit ASA to also enter its
+quenching (SQ) domain.  The following excerpt is the reply posting in
+the above bulletin board, also included above in the Quenching section.
+
+\*QSQ techniques like GA obviously are important and are crucial to
+solving many systems in time periods much shorter than might be
+obtained by SA.  In ASA, if annealing is forsaken, and Quenching turned
+on, voiding the proof of sampling, remarkable increases of speed can be
+obtained, apparently sometimes even greater than other "greedy"
+algorithms.  For example, in asa92_saga.pdf, along with 5 GA test
+problems from the UCSD GA archive, another harder problem (the ASA_TEST
+problem that comes with the ASA code) was used.  In asa93_sapvt.pdf,
+Quenching was applied to this harder problem.  The resulting SQ code
+was shown to speed up the search by as much as as factor of 86 (without
+even attempting to see if this could be increased further with more
+extreme quenching).  This is greater than the factor of 30 that was
+reported to me by Michael de la Maza for Dynamic Hill Climbing (DHC).
+This is a simple change of one number in the code, turning it into a
+variant of SQ, and is not equivalent to "tuning" any of the other many
+ASA options, e.g., like SELF_OPTIMIZE, USER_COST_SCHEDULE, etc.  Note
+that SQ will not suffice for all systems; several users of ASA reported
+that Quenching did not find the global optimal point that was otherwise
+be found using the "correct" ASA algorithm.\*U
+
+========================================================================
+	@@FORTRAN Issues
+
+20 Oct 06
+
+Two very useful URLs for combining C/C++ and Fortran are:
+http://yolinux.com/TUTORIALS/LinuxTutorialMixingFortranAndC.html
+http://arnholm.org/software/cppf77/cppf77.htm
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+29 Jul 00
+
+I've included my old 1987 RATFOR VFSR code in asa_contrib.txt.
+This code is unsupported.
+
+20 May 93
+
+Some users have requested a FORTRAN version of ASA.  I wrote early
+versions of VFSR in RATFOR and used ratfor to translate to FORTRAN,
+but picked C for my own convenience for these later versions.
+
+There are at least three reasonable options for people using FORTRAN:
+
+(1) If the FORTRAN code you use is relatively small compared to
+the ASA code, you might try f2c to change your FORTRAN source
+into C.  This code can be gotten from Netlib, by logging into
+netlib@research.att.com as netlib and then cd f2c.
+
+(2) You can use CFORTRAN, available via anonymous ftp from
+zebra.desy.de to interface your FORTRAN and C source and/or binary
+codes.  It seems the easiest way to use this would be to call a FORTRAN
+cost function from within the ASA C cost_function().
+
+(3) You can see if your compiler will accept a rather simple approach
+to calling your FORTRAN fcost() from the ASA C cost_function(), just
+passing only those variables to fcost() necessary for your
+calculation.  The procedure below worked on a Sun SPARC-2/4.1.3 using
+gcc and Sun's f77.
+
+(a) In the asa_usr.c file, at the location described in the ASA-README, or in
+your asa_usr_cst.c file if you are using COST_FILE set to TRUE, insert your
+own cost function:
+_______________________________________________________________________
+{
+#if HAVE_ANSI
+  extern void fcost_ (double *q, double *x);    /* note "_" on fcost_ */
+#else
+  extern void fcost_ ();
+#endif
+  double q;                     /* returned by fcost_() */
+  fcost_ (&q, x);
+  *cost_flag = TRUE;            /* or, add some feedback from fcost_() */
+  return (q);
+}
+________________________________________________________________________
+The requirement to use an "_" on the C-function call is machine
+dependent.
+
+(b) Create a file, e.g., cost.f, containing your FORTRAN cost
+function, e.g., if the *parameter_dimension is 4, then:
+________________________________________________________________________
+      subroutine fcost (q_n, x)
+      double precision q_n, x(4)
+      ...
+      q_n = ...
+      end
+________________________________________________________________________
+Note that element x[0] in C is mapped to x(1) in FORTRAN.
+
+(c) In the Makefile add to the "compile: " (tabbed) commands:
+________________________________________________________________________
+compile: $(USEROBJS) $(ASAOBJS)
+        f77 -c cost.f -lm
+        @$(CC) $(LDFLAGS) -o asa_run $(USEROBJS) $(ASAOBJS) cost.o -lm
+________________________________________________________________________
+Some compilers may require the addition of additional libraries and
+options, e.g., -f77 on the CC line.  In general, it seems that the
+proper compiler to link all the object files, e.g., cc or f77, should
+correspond to the language of main().  If your main() is in FORTRAN,
+then use ASA_LIB set to TRUE to use asa_main() in the ASA modules.
+
+========================================================================
+	@@Specific Machines/Architectures
+
+5 Aug 97
+
+Under Watcom version 11 exception fault errors are reported.  When
+CHECK_EXPONENT is set to TRUE, these do not appear; apparently, there
+are problems with handling too large and/or too small exponentials.
+See the ASA-README for a discussion on the use of this Pre-Compile
+OPTIONS.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+19 Aug 93
+
+On a PC, under MicroSoft Visual C++ 2.0, asa_opt likely should be
+placed with the *.c source code, _not_ the executables if they are in a
+different directory.
+
+On a Mac, under Code Warrior 6.0, asa_opt likely should be placed with
+the executables, _not_  the *.c source code if they are in a different
+directory.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Intel Paragon
+
+17 Dec 93
+On an Intel Paragon Supercomputer, Graham Campbell
+<campbell@ams.sunysb.edu> reported that the ASA test problem runs
+without error or warning using gcc-2.4.5 as gcc -g -Wall.  However,
+when using cc -O or gcc -g -O, compilation fails.
+
+22 Mar 95
+On an Intel Paragon Supercomputer, Shinichi Sakata
+<ssakata@weber.ucsd.edu> reported that ASA crashed using the native cc
+compiler when entering reanneal(), at the same location as reported by
+Graham Campbell.
+
+The location of the problem seems to be within the compiled pow()
+function.  I put together an s_pow() function by modifying some public
+domain source code from Sun available in the fdlibm directory in
+NETLIB.  s_pow() is used instead of pow() when FDLIBM_POW is set to
+TRUE.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+29 Mar 93
+
+A problem in compilation,
+} Though I compiled successfully
+}
+} on an old SUN 4/260 and a new IBM risc 6000 using both ansi c and
+}
+} old version c, troubles comes in when I try it on a newly obtained
+}
+} HWSs310 sparc workstation (claimed to be equivalent to sparc 10).
+}
+} When using cc compiler, both asa_usr.c and asa.c have been compiled,
+}
+} and it gave error message:
+}
+} undefined symbol  -dlopen
+}                   _dlclose
+}                   _dlsym
+}
+was solved by Walter Roberson <roberson@hamer.ibd.nrc.ca> by linking
+with -ldl.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+15 Jan 93
+
+Davyd Norris <daffy@sci.monash.edu.au> reports that compilation
+was successful on a Pyramid:
+"On Pyramid OSx the -Xa compiler option had to be added so that the
+compiler knows to expect ANSI code.  Also on our system there is no
+stdlib.h include file."
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+PC Code For Time Modules
+
+4 May 94
+
+From selveria@salem.sylvania.com Wed May  4 11:19:58 1994
+From: "Selverian, John" <selveria@salem.sylvania.com>
+To: "Ingber, Lester" <ingber@alumni.caltech.edu>
+Subject: time calculation
+Date: Wed, 04 May 94 14:19:00 PDT
+
+Lester,
+
+I move my code (along with ASA) back and forth between a PC & a UNIX
+machine.  The time commands work fine on the UNIX machine but not on
+the PC.  I currently use the ansi <time.h> header file and the
+following command to get the time
+
+#include <time.h>
+...
+main()
+{
+      double  start_time,end_time,elapsed_time;
+      time_t    tloc;
+...
+      start_time = (double)time(&tloc);     /* define starting time */
+      asa_main(....);                       /* call ASA */
+      end_time = (double)time(&tloc);       /* define ending time */
+      elapsed_time = end_time - start_time; /* define time spend in ASA */
+...
+}
+
+This works on both machines & I would guess with all ansi-C compliers.
+
+JS
+
+_________________________________________________________________________
+14 Apr 94
+Note that there now is only one set of time routines in asa.c, and that
+now both asa.c and asa_usr.c pass two arguments to print_time(char
+*message, FILE * ptr_asa_out).
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+18 Aug 93
+
+For Turbo C, Davyd.Norris@physics.monash.edu.au suggests adding another
+include file, tcdefs.h, after
+#include <stdlib.h>
+in asa.h and in asa_usr.h.
+/***** tcdefs.h */
+/* Custom defines for Turbo C 2.0 and above */
+#include <float.h>
+#define MAX_DOUBLE    DBL_MAX
+#define MIN_DOUBLE    DBL_MIN
+#define EPS_DOUBLE    DBL_EPSILON
+}
+/*****/
+
+He also suggests:
+} When compiling for Turbo/MS C, you need to set INT_ALLOC=TRUE and
+} INT_LONG=TRUE.  Lotsa warnings about unused variables, but no errors
+} or warnings that might mean something more serious.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+27 Aug 93
+
+From zg11@midway.uchicago.edu Thu Aug 26 19:50:31 1993
+Return-Path: <zg11@midway.uchicago.edu>
+Date: Thu, 26 Aug 93 21:53:02 CDT
+From: "zening  ge" <zg11@midway.uchicago.edu>
+Subject: asa on PC
+
+I have had the version 1.4 asa codes compiled using Turbo C++ 3.0 on my
+386SX25 PC. The only thing needs to be changed is to set IO_PROTOTYPE
+to FALSE.
+
+It is necessary to turn IO_PROTOTYPES to FALSE to avoid the errors of
+type mismatch in redefining "fprintf", "fflush", etc. For your example
+problem, it took about 5 minutes to complete the computation on my
+386SX25 PC without math-coprocessor.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+31 Aug 93
+
+Return-Path: <selveria@salem.sylvania.com>
+From: "Selverian, John" <selveria@salem.sylvania.com>
+To: "'Ingber, Lester'" <ingber@alumni.caltech.edu>
+Date: Tue, 31 Aug 93 13:58:00 PDT
+
+thanks for the tip.
+
+Setting INT_ALLOC = TRUE and INT_LONG = TRUE solved the problem. Now
+the PC and SGI give the same answers.
+
+Just for your info I am running a 486 66Mhz PC with a math co-processor
+with MS Quick C for Windows version 1.0.
+
+HP Code For Time Modules
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+4 Nov 93
+
+The changes recommended below for hpux have been implemented using the
+TIME_STD DEFINE_OPTION.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+4 Jan 10
+
+Note that Sun C++ under Solaris, e.g., using SUNPRO CC, has system
+headers that are written for both C and C++, and so the 'extern "C" {'
+line and its '}' line should be commented out in the ASA [].h files.
+
+========================================================================

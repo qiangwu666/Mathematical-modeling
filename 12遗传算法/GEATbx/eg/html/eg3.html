@@ -1,0 +1,197 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>&#20108;&#20803;&#21333;&#23792;&#20989;&#25968;&#30340;&#20248;&#21270;&#23454;&#20363;</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-01-26"><meta name="DC.source" content="eg3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>&#20108;&#20803;&#21333;&#23792;&#20989;&#25968;&#30340;&#20248;&#21270;&#23454;&#20363;</h1><!--introduction--><p>&#30446;&#26631;&#20989;&#25968;&#26159;10&#32500;De Jong&#20989;&#25968;&#65306;</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">&#30446;&#26631;&#20989;&#25968;</a></li><li><a href="#2">&#31639;&#27861;&#21442;&#25968;</a></li><li><a href="#3">&#21021;&#22987;&#31181;&#32676;</a></li><li><a href="#4">&#31181;&#32676;&#36845;&#20195;&#36827;&#21270;&#65292;&#25628;&#32034;&#26368;&#20248;&#35299;</a></li><li><a href="#5">&#32467;&#26524;</a></li></ul></div><h2>&#30446;&#26631;&#20989;&#25968;<a name="1"></a></h2><pre class="codeinput">f=@(a,b,c,d,e,f,g,h,i,j)<span class="keyword">...</span>
+    a.^2+b.^2+c.^2+d.^2+e.^2+<span class="keyword">...</span>
+    f.^2+g.^2+h.^2+i.^2+j.^2;
+</pre><h2>&#31639;&#27861;&#21442;&#25968;<a name="2"></a></h2><pre class="codeinput">population=40;  <span class="comment">%&#31181;&#32676;&#20010;&#20307;&#25968;</span>
+generation=500;  <span class="comment">%&#26368;&#22823;&#36951;&#20256;&#20195;&#25968;</span>
+nvar=10;  <span class="comment">%&#21464;&#37327;&#32500;&#24230;</span>
+len=20*nvar;  <span class="comment">%&#26579;&#33394;&#20307;&#38271;&#24230;&#65288;&#20108;&#36827;&#21046;&#20301;&#25968;&#65289;</span>
+gap=0.9;  <span class="comment">%&#20195;&#27807;</span>
+Pc=0.7;  <span class="comment">%&#20132;&#21449;&#27010;&#29575;</span>
+Pm=NaN;  <span class="comment">%&#21464;&#24322;&#27010;&#29575;&#32570;&#30465;</span>
+
+trace=zeros(2,generation);  <span class="comment">%&#23547;&#20248;&#32467;&#26524;&#36319;&#36394;</span>
+FieldD=<span class="keyword">...</span><span class="comment">  %&#21306;&#22495;&#25551;&#36848;&#22120;&#65288;&#20989;&#25968;bs2rv&#30340;&#21442;&#25968;&#65289;</span>
+    [repmat(20,1,nvar);<span class="keyword">...</span><span class="comment">     %x1&#21644;x2&#20998;&#21035;&#29992;20&#20301;&#20108;&#36827;&#21046;&#32534;&#30721;</span>
+    repmat(-512,1,nvar);<span class="keyword">...</span><span class="comment">  %lower bounds</span>
+    repmat(512,1,nvar);<span class="keyword">...</span><span class="comment">    %upper bounds</span>
+    ones(1,nvar);<span class="keyword">...</span><span class="comment">        %&#26631;&#20934;&#20108;&#36827;&#21046;&#32534;&#30721;</span>
+    zeros(1,nvar);<span class="keyword">...</span><span class="comment">        %&#32447;&#24615;&#21051;&#24230;</span>
+    ones(1,nvar);<span class="keyword">...</span><span class="comment">        %&#21253;&#21547;&#19979;&#36793;&#30028;</span>
+    ones(1,nvar)];          <span class="comment">%&#21253;&#21547;&#19978;&#36793;&#30028;</span>
+gen=0;  <span class="comment">%&#20195;&#25968;&#35745;&#25968;&#22120;</span>
+</pre><h2>&#21021;&#22987;&#31181;&#32676;<a name="3"></a></h2><pre class="codeinput">Chrom=crtbp(population,len);  <span class="comment">%&#21019;&#24314;&#31181;&#32676;</span>
+val=bs2rv(Chrom,FieldD);  <span class="comment">%&#36716;&#25442;&#25104;&#21313;&#36827;&#21046;</span>
+ObjV=f(val(:,1),val(:,2),val(:,3),val(:,4),val(:,5),<span class="keyword">...</span>
+    val(:,6),val(:,7),val(:,8),val(:,9),val(:,10));  <span class="comment">%&#21021;&#22987;&#31181;&#32676;&#23545;&#24212;&#30340;&#30446;&#26631;&#20989;&#25968;&#20540;</span>
+</pre><h2>&#31181;&#32676;&#36845;&#20195;&#36827;&#21270;&#65292;&#25628;&#32034;&#26368;&#20248;&#35299;<a name="4"></a></h2><pre class="codeinput"><span class="keyword">while</span> gen&lt;generation
+    FitnV=ranking(ObjV);  <span class="comment">%&#36866;&#24212;&#24230;</span>
+    NewChrom=select(<span class="string">'sus'</span>,Chrom,FitnV,gap);  <span class="comment">%&#36873;&#25321;&#31639;&#23376;</span>
+    NewChrom=recombin(<span class="string">'xovsp'</span>,NewChrom,Pc);  <span class="comment">%&#21333;&#28857;&#20132;&#21449;&#31639;&#23376;</span>
+    NewChrom=mutate(<span class="string">'mut'</span>,NewChrom,[],Pm);      <span class="comment">%&#21464;&#24322;&#31639;&#23376;</span>
+    val=bs2rv(NewChrom,FieldD);
+    ObjVNew=f(val(:,1),val(:,2),val(:,3),val(:,4),val(:,5),<span class="keyword">...</span>
+        val(:,6),val(:,7),val(:,8),val(:,9),val(:,10));
+    [Chrom,ObjV]=reins(Chrom,NewChrom,1,[1,1],ObjV,ObjVNew);  <span class="comment">%&#37325;&#25554;&#20837;&#23376;&#20195;&#31181;&#32676;</span>
+    val=bs2rv(Chrom,FieldD);
+    gen=gen+1;
+    <span class="comment">%&#31639;&#27861;&#24615;&#33021;&#36319;&#36394;</span>
+    trace(1,gen)=min(ObjV);
+    trace(2,gen)=sum(ObjV)/length(ObjV);
+<span class="keyword">end</span>
+</pre><h2>&#32467;&#26524;<a name="5"></a></h2><pre class="codeinput"><span class="comment">%&#26368;&#20248;&#35299;</span>
+[Y,I]=min(ObjV);
+disp([<span class="string">'min='</span> num2str(Y)]);
+disp([<span class="string">'xVal='</span> num2str(val(I,1))]);
+disp([<span class="string">'xVal='</span> num2str(val(I,2))]);
+<span class="comment">%&#31639;&#27861;&#24615;&#33021;&#36319;&#36394;</span>
+figure(2)
+plot(trace(1,:),<span class="string">'-*'</span>,<span class="string">'LineWidth'</span>,1);
+hold <span class="string">on</span>
+plot(trace(2,:)',<span class="string">'-o'</span>,<span class="string">'LineWidth'</span>,1);
+hold <span class="string">off</span>
+legend(<span class="string">'&#26368;&#20248;&#35299;&#30340;&#21464;&#21270;'</span>,<span class="string">'&#31181;&#32676;&#22343;&#20540;&#30340;&#21464;&#21270;'</span>,<span class="string">'Location'</span>,<span class="string">'Best'</span>);
+grid <span class="string">on</span>
+title(<span class="string">'&#31639;&#27861;&#24615;&#33021;&#36319;&#36394;'</span>)
+xlabel(<span class="string">'&#36827;&#21270;&#20195;&#25968;'</span>); ylabel(<span class="string">'&#20989;&#25968;&#20540;'</span>);
+</pre><pre class="codeoutput">min=8.1062e-06
+xVal=-0.0024414
+xVal=-0.00048828
+</pre><img vspace="5" hspace="5" src="eg3_01.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% 二元单峰函数的优化实例
+% 目标函数是10维De Jong函数：
+
+%% 目标函数
+f=@(a,b,c,d,e,f,g,h,i,j)...
+    a.^2+b.^2+c.^2+d.^2+e.^2+...
+    f.^2+g.^2+h.^2+i.^2+j.^2;
+
+%% 算法参数
+population=40;  %种群个体数
+generation=500;  %最大遗传代数
+nvar=10;  %变量维度
+len=20*nvar;  %染色体长度（二进制位数）
+gap=0.9;  %代沟
+Pc=0.7;  %交叉概率
+Pm=NaN;  %变异概率缺省
+
+trace=zeros(2,generation);  %寻优结果跟踪
+FieldD=...  %区域描述器（函数bs2rv的参数）
+    [repmat(20,1,nvar);...     %x1和x2分别用20位二进制编码
+    repmat(-512,1,nvar);...  %lower bounds
+    repmat(512,1,nvar);...    %upper bounds
+    ones(1,nvar);...        %标准二进制编码    
+    zeros(1,nvar);...        %线性刻度
+    ones(1,nvar);...        %包含下边界
+    ones(1,nvar)];          %包含上边界
+gen=0;  %代数计数器
+
+%% 初始种群
+Chrom=crtbp(population,len);  %创建种群
+val=bs2rv(Chrom,FieldD);  %转换成十进制
+ObjV=f(val(:,1),val(:,2),val(:,3),val(:,4),val(:,5),...
+    val(:,6),val(:,7),val(:,8),val(:,9),val(:,10));  %初始种群对应的目标函数值
+
+%% 种群迭代进化，搜索最优解
+while gen<generation
+    FitnV=ranking(ObjV);  %适应度
+    NewChrom=select('sus',Chrom,FitnV,gap);  %选择算子
+    NewChrom=recombin('xovsp',NewChrom,Pc);  %单点交叉算子
+    NewChrom=mutate('mut',NewChrom,[],Pm);      %变异算子
+    val=bs2rv(NewChrom,FieldD);
+    ObjVNew=f(val(:,1),val(:,2),val(:,3),val(:,4),val(:,5),...
+        val(:,6),val(:,7),val(:,8),val(:,9),val(:,10));
+    [Chrom,ObjV]=reins(Chrom,NewChrom,1,[1,1],ObjV,ObjVNew);  %重插入子代种群
+    val=bs2rv(Chrom,FieldD);
+    gen=gen+1;
+    %算法性能跟踪
+    trace(1,gen)=min(ObjV);  
+    trace(2,gen)=sum(ObjV)/length(ObjV);
+end
+
+%% 结果
+%最优解
+[Y,I]=min(ObjV);
+disp(['min=' num2str(Y)]);
+disp(['xVal=' num2str(val(I,1))]);
+disp(['xVal=' num2str(val(I,2))]);
+%算法性能跟踪
+figure(2)
+plot(trace(1,:),'-*','LineWidth',1);
+hold on 
+plot(trace(2,:)','-o','LineWidth',1);
+hold off
+legend('最优解的变化','种群均值的变化','Location','Best');
+grid on
+title('算法性能跟踪')
+xlabel('进化代数'); ylabel('函数值');
+##### SOURCE END #####
+--></body></html>
