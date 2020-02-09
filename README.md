@@ -1,0 +1,2 @@
+# Mathematical-modeling
+整理的数学建模相关算法的MATLAB代码以及相应算法比较经典的参考文献
